@@ -2,16 +2,16 @@ import { supabase, isSupabaseConfigured } from '../config/supabaseClient';
 
 const AUTHORIZED_ADMINS = [
   {
-    email: 'piyushpatel6770@gmail.com',
-    password: '#1Piyush',
-    name: 'Piyush Patel',
-    role: 'Admin',
-  },
-  {
-    email: 'admin@swatishinde.com',
-    password: 'admin123',
+    email: 'swati.shinde@pccoepune.org',
+    password: 'swatishinde123',
     name: 'Dr. Swati Vijay Shinde',
     role: 'Administrator',
+  },
+  {
+    email: 'piyush.patel24@pccoepune.org',
+    password: 'piyushpatel123',
+    name: 'Piyush Patel',
+    role: 'Admin',
   },
 ];
 

@@ -106,14 +106,14 @@ export const SkillsManagerPage = () => {
     {
       key: 'name',
       label: 'Skill / Domain Specialization',
-      render: (val) => <span className="font-bold text-white">{val}</span>,
+      render: (val) => <span className="font-bold text-slate-900 dark:text-white">{val}</span>,
     },
     { key: 'category', label: 'Domain Category' },
     {
       key: 'proficiency',
       label: 'Expertise Level',
       render: (val, item) => (
-        <span className="font-mono text-zinc-300">
+        <span className="font-mono text-slate-700 dark:text-zinc-300">
           {(item.proficiency ?? item.proficiency_level ?? 90)}%
         </span>
       ),
@@ -124,10 +124,10 @@ export const SkillsManagerPage = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <div>
-        <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <Code2 className="w-5 h-5 text-zinc-300" /> Technical Skills & Research Competencies
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Code2 className="w-5 h-5 text-blue-600 dark:text-zinc-300" /> Technical Skills & Research Competencies
         </h1>
-        <p className="text-xs text-zinc-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
           Manage AI/ML domains, soft computing proficiencies, architectures, and programming toolkits.
         </p>
       </div>
@@ -158,9 +158,9 @@ export const SkillsManagerPage = () => {
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs font-sans">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h2 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/80 backdrop-blur-xs font-sans">
+          <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {editingItem ? 'Edit Skill' : 'Add Technical Skill'}
             </h2>
 
@@ -202,18 +202,18 @@ export const SkillsManagerPage = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-900 rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 text-xs font-black text-black bg-zinc-100 hover:bg-white rounded-xl cursor-pointer shadow-md"
+                  className="px-5 py-2 text-xs font-black text-white bg-slate-900 hover:bg-slate-800 dark:text-black dark:bg-zinc-100 dark:hover:bg-white rounded-xl cursor-pointer shadow-md"
                 >
                   {saving ? 'Saving...' : editingItem ? 'Update Skill' : 'Save Skill'}
                 </button>

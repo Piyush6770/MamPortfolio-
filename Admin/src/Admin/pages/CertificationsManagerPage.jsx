@@ -114,8 +114,8 @@ export const CertificationsManagerPage = () => {
       label: 'Certification / Membership Title',
       render: (val, item) => (
         <div className="space-y-0.5 max-w-md">
-          <div className="font-bold text-white line-clamp-1">{val}</div>
-          <div className="text-[11px] text-zinc-400">{item.issuer || item.organization}</div>
+          <div className="font-bold text-slate-900 dark:text-white line-clamp-1">{val}</div>
+          <div className="text-[11px] text-slate-500 dark:text-zinc-400">{item.issuer || item.organization}</div>
         </div>
       ),
     },
@@ -123,7 +123,7 @@ export const CertificationsManagerPage = () => {
       key: 'type',
       label: 'Type',
       render: (val) => (
-        <span className="capitalize font-medium text-zinc-300">
+        <span className="capitalize font-medium text-slate-700 dark:text-zinc-300">
           {val === 'membership' ? 'Professional Membership' : 'Certificate'}
         </span>
       ),
@@ -135,10 +135,10 @@ export const CertificationsManagerPage = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <div>
-        <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <Award className="w-5 h-5 text-zinc-300" /> Certifications & Professional Memberships
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Award className="w-5 h-5 text-slate-600 dark:text-zinc-300" /> Certifications & Professional Memberships
         </h1>
-        <p className="text-xs text-zinc-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
           Manage NVIDIA DLI Instructor Ambassador credentials, NPTEL Silver Elite ranks, ISTE, and IEEE memberships.
         </p>
       </div>
@@ -169,9 +169,9 @@ export const CertificationsManagerPage = () => {
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs font-sans">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h2 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/80 backdrop-blur-xs font-sans">
+          <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {editingItem ? 'Edit Credential' : 'Add Credential / Membership'}
             </h2>
 
@@ -231,18 +231,18 @@ export const CertificationsManagerPage = () => {
                 onChange={(val) => setFormData((p) => ({ ...p, is_visible: val }))}
               />
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-900 rounded-xl cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 text-xs font-black text-black bg-zinc-100 hover:bg-white rounded-xl cursor-pointer shadow-md"
+                  className="px-5 py-2 text-xs font-black text-white bg-slate-900 hover:bg-slate-800 dark:text-black dark:bg-zinc-100 dark:hover:bg-white rounded-xl cursor-pointer shadow-md transition-colors"
                 >
                   {saving ? 'Saving...' : editingItem ? 'Update Credential' : 'Save Credential'}
                 </button>

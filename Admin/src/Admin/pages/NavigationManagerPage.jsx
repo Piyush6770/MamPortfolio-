@@ -62,7 +62,7 @@ export const NavigationManagerPage = () => {
       key: 'is_visible',
       label: 'Status',
       render: (val) => (
-        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${val !== false ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/60' : 'bg-zinc-800 text-zinc-400'}`}>
+        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${val !== false ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60' : 'bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400'}`}>
           {val !== false ? 'Visible in Menu' : 'Hidden'}
         </span>
       ),
@@ -72,10 +72,10 @@ export const NavigationManagerPage = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <div>
-        <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <MenuSquare className="w-5 h-5 text-indigo-400" /> Navigation Menu Manager
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <MenuSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Navigation Menu Manager
         </h1>
-        <p className="text-xs text-zinc-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
           Reorder navigation links or toggle visibility in the public header and mobile dropdown menus.
         </p>
       </div>

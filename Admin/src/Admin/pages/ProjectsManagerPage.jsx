@@ -101,21 +101,17 @@ export const ProjectsManagerPage = () => {
         loadProjects();
         triggerRefresh();
       } else {
-        showToast('Failed to update project: ' + (error.message || 'Unknown error'), 'error');
+        showToast('Failed to update project: ' + (error.message || 'Error'), 'error');
       }
     } else {
-      const payload = {
-        ...formData,
-        display_order: projects.length + 1,
-      };
-      const { error } = await portfolioService.projects.create(payload);
+      const { error } = await portfolioService.projects.create(formData);
       if (!error) {
         showToast('Project created successfully!');
         setModalOpen(false);
         loadProjects();
         triggerRefresh();
       } else {
-        showToast('Failed to create project: ' + (error.message || 'Unknown error'), 'error');
+        showToast('Failed to create project: ' + (error.message || 'Error'), 'error');
       }
     }
     setSaving(false);
@@ -127,24 +123,26 @@ export const ProjectsManagerPage = () => {
     const { error } = await portfolioService.projects.delete(deleteTarget.id);
     setSaving(false);
     if (!error) {
-      showToast('Project deleted successfully!');
+      showToast('Project removed successfully!');
       setDeleteTarget(null);
       loadProjects();
       triggerRefresh();
     } else {
-      showToast('Failed to delete: ' + (error.message || 'Unknown error'), 'error');
+      showToast('Failed to delete project: ' + (error.message || 'Error'), 'error');
     }
   };
 
   const handleToggleVisibility = async (proj) => {
-    const nextVal = proj.is_visible === false;
-    await portfolioService.projects.update(proj.id, { is_visible: nextVal });
+    const updated = !proj.is_visible;
+    await portfolioService.projects.update(proj.id, { is_visible: updated });
+    showToast(`Project is now ${updated ? 'visible' : 'hidden'} on live website.`);
     loadProjects();
     triggerRefresh();
   };
 
   const handleReorder = async (reorderedList) => {
     await portfolioService.projects.reorder(reorderedList);
+    showToast('Project display order updated!');
     loadProjects();
     triggerRefresh();
   };
@@ -152,32 +150,47 @@ export const ProjectsManagerPage = () => {
   const columns = [
     {
       key: 'title',
-      label: 'Project Title & Grant',
-      render: (val, item) => (
-        <div className="space-y-0.5 max-w-sm">
-          <div className="font-bold text-white line-clamp-2 flex items-center gap-1.5">
-            {item.is_featured && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />}
-            {val}
+      label: 'Project Name & Agency',
+      render: (_, proj) => (
+        <div className="space-y-0.5">
+          <div className="font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-1.5">
+            {proj.is_featured && <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />}
+            {proj.title}
           </div>
-          <div className="text-[11px] text-zinc-400 truncate">
-            {item.funding_agency || item.agency} · {item.amount}
+          <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+            {proj.funding_agency || proj.agency || 'Government'} · <span className="text-blue-600 dark:text-blue-400 font-semibold">{proj.amount || '—'}</span>
           </div>
         </div>
       ),
     },
-    { key: 'category', label: 'Category' },
-    { key: 'role', label: 'Role' },
-    { key: 'period', label: 'Period' },
-    { key: 'publish_status', label: 'Status' },
+    {
+      key: 'period',
+      label: 'Period & Status',
+      render: (_, proj) => (
+        <div className="space-y-0.5 text-xs text-slate-600 dark:text-zinc-300">
+          <div>{proj.period || '—'}</div>
+          <div className="text-[10px] text-slate-500 dark:text-zinc-500">{proj.status}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'category',
+      label: 'Category',
+      render: (cat) => <span className="text-xs text-slate-600 dark:text-zinc-300">{cat || 'Government'}</span>,
+    },
+    {
+      key: 'publish_status',
+      label: 'Status',
+    },
   ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <div>
-        <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <FolderGit2 className="w-5 h-5 text-zinc-300" /> Funded Projects & Research Grants
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <FolderGit2 className="w-5 h-5 text-blue-600 dark:text-zinc-300" /> Research Projects & Grants Manager
         </h1>
-        <p className="text-xs text-zinc-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
           Manage research grants (DST, SPPU, AICTE), industry projects, consultancies, and credentials.
         </p>
       </div>
@@ -199,9 +212,9 @@ export const ProjectsManagerPage = () => {
 
       {/* Edit / Add Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs overflow-y-auto font-sans">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-5 my-8 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h2 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/80 backdrop-blur-xs overflow-y-auto font-sans">
+          <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-5 my-8 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {editingItem ? 'Edit Project Details' : 'Add New Project / Grant'}
             </h2>
 
@@ -317,18 +330,18 @@ export const ProjectsManagerPage = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-900 rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 text-xs font-black text-black bg-zinc-100 hover:bg-white rounded-xl cursor-pointer shadow-md"
+                  className="px-5 py-2 text-xs font-black text-white bg-slate-900 hover:bg-slate-800 dark:text-black dark:bg-zinc-100 dark:hover:bg-white rounded-xl cursor-pointer shadow-md"
                 >
                   {saving ? 'Saving...' : editingItem ? 'Update Project' : 'Save & Publish'}
                 </button>

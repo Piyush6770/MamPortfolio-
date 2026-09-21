@@ -87,16 +87,14 @@ export const AdminLayout = ({ darkMode, setDarkMode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-zinc-100 flex flex-col font-sans selection:bg-zinc-700 selection:text-white">
+    <div className="min-h-screen bg-slate-100 dark:bg-black text-slate-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-indigo-500/20 dark:selection:bg-zinc-700 selection:text-indigo-900 dark:selection:text-white transition-colors duration-150">
       {/* Sidebar */}
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content Area */}
-      <div className="lg:pl-64 flex flex-col flex-1 min-h-screen bg-zinc-950">
+      <div className="lg:pl-64 flex flex-col flex-1 min-h-screen bg-slate-50 dark:bg-zinc-950 transition-colors duration-150">
         <AdminNavbar
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">

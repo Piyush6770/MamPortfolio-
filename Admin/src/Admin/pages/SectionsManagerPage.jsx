@@ -52,10 +52,10 @@ export const SectionsManagerPage = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <div>
-        <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <Layers className="w-5 h-5 text-indigo-400" /> Major Section Visibility & Layout
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Layers className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Major Section Visibility & Layout
         </h1>
-        <p className="text-xs text-zinc-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
           Enable or disable full major sections on the public site (Hero, About, Research, Patents, Projects, Guidance, Books, Talks, Gallery, Contact).
         </p>
       </div>

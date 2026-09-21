@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { ThemeProvider } from './Admin/context/ThemeContext';
 import { AuthProvider, useAuth } from './Admin/context/AuthContext';
 import { AdminDataProvider, useAdminData } from './Admin/context/AdminDataContext';
 import { AdminLayout } from './Admin/components/AdminLayout';
@@ -24,10 +25,10 @@ const AdminPortalContent = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center font-sans">
+      <div className="min-h-screen bg-slate-100 dark:bg-black text-slate-800 dark:text-zinc-100 flex items-center justify-center font-sans">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-2 border-zinc-200 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-zinc-400 font-medium">Loading Admin Portal...</p>
+          <div className="w-10 h-10 border-2 border-slate-400 dark:border-zinc-200 border-t-transparent dark:border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Loading Admin Portal...</p>
         </div>
       </div>
     );
@@ -42,10 +43,13 @@ const AdminPortalContent = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AdminDataProvider>
-        <AdminPortalContent />
-      </AdminDataProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AdminDataProvider>
+          <AdminPortalContent />
+        </AdminDataProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
+

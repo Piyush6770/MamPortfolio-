@@ -72,8 +72,8 @@ export const SiteSettingsPage = () => {
 
   if (loading) {
     return (
-      <div className="py-20 text-center text-zinc-500">
-        <div className="w-8 h-8 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+      <div className="py-20 text-center text-slate-500 dark:text-zinc-500">
+        <div className="w-8 h-8 border-2 border-slate-400 dark:border-zinc-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
         <span className="text-xs">Loading settings...</span>
       </div>
     );
@@ -83,10 +83,10 @@ export const SiteSettingsPage = () => {
     <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in duration-200 font-sans">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <Settings className="w-5 h-5 text-zinc-300" /> Global Site Settings & Database Sync
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Settings className="w-5 h-5 text-slate-600 dark:text-zinc-300" /> Global Site Settings & Database Sync
           </h1>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
             Configure website name, primary affiliations, profile photos, and 1-click database synchronization.
           </p>
         </div>
@@ -94,19 +94,19 @@ export const SiteSettingsPage = () => {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-1.5 px-5 py-2 bg-zinc-100 hover:bg-white text-black text-xs font-black rounded-xl transition-all cursor-pointer shadow-lg active:scale-98"
+          className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-black text-xs font-black rounded-xl transition-all cursor-pointer shadow-lg active:scale-98"
         >
           <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Settings'}
         </button>
       </div>
 
       {/* Sync Banner Box */}
-      <div className="bg-zinc-950 border border-zinc-800/80 rounded-2xl p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl p-6 shadow-sm dark:shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="text-sm font-bold text-white">
+          <div className="text-sm font-bold text-slate-900 dark:text-white">
             1-Click Initial Faculty Data Synchronization
           </div>
-          <p className="text-xs text-zinc-400 max-w-xl leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-xl leading-relaxed">
             Synchronizes all standard curriculum vitae data (54 publications, 15 patents, 11 projects, 7 books, student scholars, and gallery moments) into the system data tables.
           </p>
         </div>
@@ -114,7 +114,7 @@ export const SiteSettingsPage = () => {
         <button
           onClick={handleSeedData}
           disabled={syncing}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-bold rounded-xl border border-zinc-700 transition-all cursor-pointer disabled:opacity-50 shrink-0"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-200 text-xs font-bold rounded-xl border border-slate-300 dark:border-zinc-700 transition-all cursor-pointer disabled:opacity-50 shrink-0"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
           {syncing ? syncStatus || 'Syncing...' : 'Sync Initial Data Now'}
@@ -122,7 +122,7 @@ export const SiteSettingsPage = () => {
       </div>
 
       {/* Main Settings Form */}
-      <div className="bg-zinc-950 border border-zinc-800/80 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl p-6 sm:p-8 shadow-sm dark:shadow-xl space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <FormInput
             label="Owner / Faculty Full Name"
@@ -190,7 +190,7 @@ export const SiteSettingsPage = () => {
             />
           </div>
 
-          <div className="md:col-span-2 pt-4 border-t border-zinc-800/80">
+          <div className="md:col-span-2 pt-4 border-t border-slate-200 dark:border-zinc-800/80">
             <MediaUploader
               label="Global Profile & Faculty Portrait"
               value={formData.profile_image_url}

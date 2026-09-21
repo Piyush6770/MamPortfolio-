@@ -56,8 +56,8 @@ export const HeroManagerPage = () => {
 
   if (loading) {
     return (
-      <div className="py-20 text-center text-zinc-500">
-        <div className="w-8 h-8 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+      <div className="py-20 text-center text-slate-400 dark:text-zinc-500">
+        <div className="w-8 h-8 border-2 border-slate-400 dark:border-zinc-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
         <span className="text-xs">Loading Hero configuration...</span>
       </div>
     );
@@ -68,10 +68,10 @@ export const HeroManagerPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-400" /> Hero Section Manager
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-amber-500" /> Hero Section Manager
           </h1>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
             Configure greeting, designations, introductory bio, action buttons, and hero portrait.
           </p>
         </div>
@@ -81,7 +81,7 @@ export const HeroManagerPage = () => {
             type="button"
             onClick={() => handleSave('draft')}
             disabled={saving}
-            className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-bold rounded-xl transition-all cursor-pointer border border-zinc-800"
+            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-300 text-xs font-bold rounded-xl transition-all cursor-pointer border border-slate-200 dark:border-zinc-800"
           >
             Save as Draft
           </button>
@@ -89,7 +89,7 @@ export const HeroManagerPage = () => {
             type="button"
             onClick={() => handleSave('published')}
             disabled={saving}
-            className="flex items-center gap-1.5 px-5 py-2 bg-zinc-100 hover:bg-white text-black text-xs font-black rounded-xl transition-all cursor-pointer shadow-lg active:scale-98"
+            className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-black text-xs font-black rounded-xl transition-all cursor-pointer shadow-md active:scale-98"
           >
             <Save className="w-4 h-4" /> {saving ? 'Publishing...' : 'Publish Hero'}
           </button>
@@ -97,7 +97,7 @@ export const HeroManagerPage = () => {
       </div>
 
       {/* Main Form Box */}
-      <div className="bg-zinc-950 border border-zinc-800/80 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl p-6 sm:p-8 shadow-sm dark:shadow-xl space-y-6 transition-colors duration-150">
         <ToggleSwitch
           label="Section Visibility"
           description="Display or hide the Hero banner on the public portfolio homepage."

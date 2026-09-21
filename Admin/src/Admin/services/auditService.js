@@ -169,7 +169,15 @@ export const getDefaultAuditLogs = () => [
 export const auditService = {
   async log(action, entity, entityId = null, details = {}) {
     try {
-      let adminEmail = 'admin@swatishinde.com';
+      let adminEmail = 'swati.shinde@pccoepune.org';
+
+      const mock = localStorage.getItem('portfolio_admin_mock_session');
+      if (mock) {
+        try {
+          const parsed = JSON.parse(mock);
+          if (parsed?.email) adminEmail = parsed.email;
+        } catch (_) {}
+      }
 
       if (isSupabaseConfigured && supabase) {
         try {

@@ -105,8 +105,8 @@ export const SocialLinksManagerPage = () => {
       label: 'Platform / Profile',
       render: (val, item) => (
         <div className="space-y-0.5 max-w-md">
-          <div className="font-bold text-white">{val}</div>
-          <div className="text-[11px] text-zinc-400 truncate">{item.url}</div>
+          <div className="font-bold text-slate-900 dark:text-white">{val}</div>
+          <div className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">{item.url}</div>
         </div>
       ),
     },
@@ -116,10 +116,10 @@ export const SocialLinksManagerPage = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <div>
-        <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <Share2 className="w-5 h-5 text-zinc-300" /> Academic & Social Profile Links
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Share2 className="w-5 h-5 text-slate-600 dark:text-zinc-300" /> Academic & Social Profile Links
         </h1>
-        <p className="text-xs text-zinc-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
           Manage Google Scholar, Scopus Author, LinkedIn, YouTube, ResearchGate, and ORCID profiles.
         </p>
       </div>
@@ -150,9 +150,9 @@ export const SocialLinksManagerPage = () => {
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs font-sans">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h2 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/80 backdrop-blur-xs font-sans">
+          <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {editingItem ? 'Edit Profile Link' : 'Add Profile Link'}
             </h2>
 
@@ -187,18 +187,18 @@ export const SocialLinksManagerPage = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-900 rounded-xl cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 text-xs font-black text-black bg-zinc-100 hover:bg-white rounded-xl cursor-pointer shadow-md"
+                  className="px-5 py-2 text-xs font-black text-white bg-slate-900 hover:bg-slate-800 dark:text-black dark:bg-zinc-100 dark:hover:bg-white rounded-xl cursor-pointer shadow-md transition-colors"
                 >
                   {saving ? 'Saving...' : editingItem ? 'Update Link' : 'Save Link'}
                 </button>

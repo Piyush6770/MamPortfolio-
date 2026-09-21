@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronUp, ChevronDown, Edit2, Trash2, Eye, EyeOff, Plus, Filter, ArrowUpDown } from 'lucide-react';
+import { Search, ChevronUp, ChevronDown, Edit2, Trash2, Eye, EyeOff, Plus } from 'lucide-react';
 import { StatusBadge } from './StatusBadge';
 
 export const DataTable = ({
@@ -63,24 +63,24 @@ export const DataTable = ({
   };
 
   return (
-    <div className="bg-zinc-950 border border-zinc-800/80 rounded-2xl shadow-xl overflow-hidden space-y-4">
+    <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden space-y-4 transition-colors duration-150">
       {/* Header controls */}
-      <div className="p-5 border-b border-zinc-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 border-b border-slate-200 dark:border-zinc-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          {title && <h2 className="text-lg font-bold text-white">{title}</h2>}
-          {subtitle && <p className="text-xs text-zinc-400 mt-0.5">{subtitle}</p>}
+          {title && <h2 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h2>}
+          {subtitle && <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">{subtitle}</p>}
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Search */}
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
             <input
               type="text"
               placeholder="Search items..."
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              className="pl-9 pr-4 py-2 text-xs rounded-xl bg-zinc-900 border border-zinc-800 outline-none focus:border-zinc-500 w-48 sm:w-60 text-zinc-100 placeholder:text-zinc-600"
+              className="pl-9 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 outline-none focus:border-slate-500 dark:focus:border-zinc-500 w-48 sm:w-60 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600"
             />
           </div>
 
@@ -88,7 +88,7 @@ export const DataTable = ({
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
-            className="px-3 py-2 text-xs rounded-xl bg-zinc-900 border border-zinc-800 outline-none text-zinc-200 cursor-pointer"
+            className="px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 outline-none text-slate-700 dark:text-zinc-200 cursor-pointer"
           >
             <option value="ALL">All Status</option>
             <option value="PUBLISHED">Published</option>
@@ -100,7 +100,7 @@ export const DataTable = ({
           {onAddNew && (
             <button
               onClick={onAddNew}
-              className="flex items-center gap-1.5 px-4 py-2 bg-zinc-100 hover:bg-white text-black text-xs font-black rounded-xl transition-all shadow-sm cursor-pointer active:scale-98"
+              className="flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-black text-xs font-black rounded-xl transition-all shadow-sm cursor-pointer active:scale-98"
             >
               <Plus className="w-4 h-4" /> {addButtonLabel}
             </button>
@@ -111,26 +111,26 @@ export const DataTable = ({
       {/* Table Container */}
       <div className="overflow-x-auto">
         {loading ? (
-          <div className="py-20 flex flex-col items-center justify-center text-zinc-500 space-y-3">
-            <div className="w-7 h-7 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
+          <div className="py-20 flex flex-col items-center justify-center text-slate-400 dark:text-zinc-500 space-y-3">
+            <div className="w-7 h-7 border-2 border-slate-400 dark:border-zinc-400 border-t-transparent rounded-full animate-spin" />
             <span className="text-xs font-medium">Loading entries...</span>
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="py-16 text-center space-y-2">
-            <p className="text-sm font-bold text-zinc-300">{emptyTitle}</p>
-            <p className="text-xs text-zinc-500">{emptySubtitle}</p>
+            <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">{emptyTitle}</p>
+            <p className="text-xs text-slate-500 dark:text-zinc-500">{emptySubtitle}</p>
             {onAddNew && (
               <button
                 onClick={onAddNew}
-                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold rounded-xl transition-colors cursor-pointer border border-zinc-700"
+                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-200 text-xs font-bold rounded-xl transition-colors cursor-pointer border border-slate-200 dark:border-zinc-700"
               >
                 <Plus className="w-3.5 h-3.5" /> {addButtonLabel}
               </button>
             )}
           </div>
         ) : (
-          <table className="w-full text-left text-xs text-zinc-300">
-            <thead className="bg-zinc-900/90 text-zinc-400 uppercase tracking-wider font-mono text-[10px] border-b border-zinc-800">
+          <table className="w-full text-left text-xs text-slate-700 dark:text-zinc-300">
+            <thead className="bg-slate-50 dark:bg-zinc-900/90 text-slate-500 dark:text-zinc-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-zinc-800">
               <tr>
                 {onReorder && <th className="py-3 px-4 w-14 text-center">Order</th>}
                 {columns.map((col) => (
@@ -141,7 +141,7 @@ export const DataTable = ({
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-900">
+            <tbody className="divide-y divide-slate-100 dark:divide-zinc-900">
               {paginatedItems.map((item, idx) => {
                 const isHidden = item.is_visible === false;
                 const status = item[statusKey] || 'published';
@@ -149,8 +149,8 @@ export const DataTable = ({
                 return (
                   <tr
                     key={item.id || idx}
-                    className={`hover:bg-zinc-900/60 transition-colors ${
-                      isHidden ? 'opacity-50 bg-zinc-950/40' : ''
+                    className={`hover:bg-slate-50 dark:hover:bg-zinc-900/60 transition-colors ${
+                      isHidden ? 'opacity-50 bg-slate-50/50 dark:bg-zinc-950/40' : ''
                     }`}
                   >
                     {/* Reorder Buttons */}
@@ -160,7 +160,7 @@ export const DataTable = ({
                           <button
                             onClick={() => handleMove(idx, 'up')}
                             disabled={currentPage === 1 && idx === 0}
-                            className="p-1 text-zinc-500 hover:text-zinc-200 disabled:opacity-20 cursor-pointer"
+                            className="p-1 text-slate-400 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-zinc-200 disabled:opacity-20 cursor-pointer"
                             title="Move Up"
                           >
                             <ChevronUp className="w-3.5 h-3.5" />
@@ -168,7 +168,7 @@ export const DataTable = ({
                           <button
                             onClick={() => handleMove(idx, 'down')}
                             disabled={idx === paginatedItems.length - 1 && currentPage === totalPages}
-                            className="p-1 text-zinc-500 hover:text-zinc-200 disabled:opacity-20 cursor-pointer"
+                            className="p-1 text-slate-400 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-zinc-200 disabled:opacity-20 cursor-pointer"
                             title="Move Down"
                           >
                             <ChevronDown className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export const DataTable = ({
 
                     {/* Dynamic Columns */}
                     {columns.map((col) => (
-                      <td key={col.key} className="py-3.5 px-4 font-normal text-zinc-200">
+                      <td key={col.key} className="py-3.5 px-4 font-normal text-slate-800 dark:text-zinc-200">
                         {col.render ? (
                           col.render(item[col.key], item)
                         ) : col.key === 'publish_status' || col.key === 'status' ? (
@@ -195,17 +195,17 @@ export const DataTable = ({
                       {onToggleVisibility && (
                         <button
                           onClick={() => onToggleVisibility(item)}
-                          className="p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-400 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
                           title={isHidden ? 'Make visible on website' : 'Hide from website'}
                         >
-                          {isHidden ? <EyeOff className="w-4 h-4 text-amber-400" /> : <Eye className="w-4 h-4" />}
+                          {isHidden ? <EyeOff className="w-4 h-4 text-amber-500" /> : <Eye className="w-4 h-4" />}
                         </button>
                       )}
 
                       {onEdit && (
                         <button
                           onClick={() => onEdit(item)}
-                          className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -215,7 +215,7 @@ export const DataTable = ({
                       {onDelete && (
                         <button
                           onClick={() => onDelete(item)}
-                          className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-400 dark:text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -232,7 +232,7 @@ export const DataTable = ({
 
       {/* Pagination Controls */}
       {filteredItems.length > itemsPerPage && (
-        <div className="p-4 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400">
+        <div className="p-4 border-t border-slate-200 dark:border-zinc-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400">
           <div>
             Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
             {Math.min(currentPage * itemsPerPage, filteredItems.length)} of {filteredItems.length} entries
@@ -241,17 +241,17 @@ export const DataTable = ({
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-900 disabled:opacity-30 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-900 text-slate-700 dark:text-zinc-300 disabled:opacity-30 cursor-pointer"
             >
               Previous
             </button>
-            <span className="font-mono text-zinc-300">
+            <span className="font-mono text-slate-700 dark:text-zinc-300">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-900 disabled:opacity-30 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-900 text-slate-700 dark:text-zinc-300 disabled:opacity-30 cursor-pointer"
             >
               Next
             </button>

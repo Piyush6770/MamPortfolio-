@@ -83,17 +83,17 @@ export const ResumeManagerPage = () => {
   return (
     <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in duration-200 font-sans">
       <div>
-        <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <FileDown className="w-5 h-5 text-zinc-300" /> Resume & Curriculum Vitae Management
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <FileDown className="w-5 h-5 text-slate-600 dark:text-zinc-300" /> Resume & Curriculum Vitae Management
         </h1>
-        <p className="text-xs text-zinc-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
           Upload updated PDF resume documents, tag version numbers, and choose the active CV for public download.
         </p>
       </div>
 
       {/* Upload Box */}
-      <div className="bg-zinc-950 border border-zinc-800/80 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
-        <h2 className="text-sm font-bold text-white">
+      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl p-6 sm:p-8 shadow-sm dark:shadow-xl space-y-6">
+        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
           Upload New Resume Version (PDF)
         </h2>
 
@@ -128,7 +128,7 @@ export const ResumeManagerPage = () => {
             <button
               type="submit"
               disabled={saving || !newFileUrl}
-              className="px-6 py-2.5 bg-zinc-100 hover:bg-white text-black text-xs font-black rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-50 active:scale-98"
+              className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-black text-xs font-black rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-50 active:scale-98"
             >
               {saving ? 'Uploading...' : 'Save & Record CV Document'}
             </button>
@@ -137,15 +137,15 @@ export const ResumeManagerPage = () => {
       </div>
 
       {/* Resume History List */}
-      <div className="bg-zinc-950 border border-zinc-800/80 rounded-2xl p-6 shadow-xl space-y-4">
-        <h2 className="text-sm font-bold text-white">
+      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 rounded-2xl p-6 shadow-sm dark:shadow-xl space-y-4">
+        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
           Uploaded Resume Versions ({resumes.length})
         </h2>
 
         {loading ? (
-          <div className="py-12 text-center text-xs text-zinc-500">Loading CV versions...</div>
+          <div className="py-12 text-center text-xs text-slate-500 dark:text-zinc-500">Loading CV versions...</div>
         ) : resumes.length === 0 ? (
-          <div className="py-12 text-center text-xs text-zinc-500">No resumes uploaded yet.</div>
+          <div className="py-12 text-center text-xs text-slate-500 dark:text-zinc-500">No resumes uploaded yet.</div>
         ) : (
           <div className="space-y-3">
             {resumes.map((r) => (
@@ -153,24 +153,24 @@ export const ResumeManagerPage = () => {
                 key={r.id}
                 className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                   r.is_active
-                    ? 'bg-zinc-900 border-zinc-700 shadow-sm ring-1 ring-zinc-700'
-                    : 'bg-zinc-950 border-zinc-800/80 hover:border-zinc-700'
+                    ? 'bg-slate-50 dark:bg-zinc-900 border-slate-300 dark:border-zinc-700 shadow-sm ring-1 ring-slate-300 dark:ring-zinc-700'
+                    : 'bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-600 dark:text-zinc-300 shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-xs text-white flex items-center gap-2">
+                    <div className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-2">
                       <span>{r.file_name || r.title || 'Curriculum Vitae'}</span>
                       {r.is_active && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-900/60">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-900/60">
                           <CheckCircle2 className="w-3 h-3" /> Active Public Download
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] text-zinc-400 mt-0.5">
+                    <div className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
                       {r.version_label || r.version_tag || 'v1.0'} · {new Date(r.created_at || Date.now()).toLocaleDateString()}
                     </div>
                   </div>
@@ -181,7 +181,7 @@ export const ResumeManagerPage = () => {
                     href={r.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+                    className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 rounded-lg transition-colors"
                     title="View / Download PDF"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -190,7 +190,7 @@ export const ResumeManagerPage = () => {
                   {!r.is_active && (
                     <button
                       onClick={() => handleSetActive(r.id)}
-                      className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold rounded-lg border border-zinc-700 cursor-pointer transition-colors"
+                      className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-200 text-xs font-bold rounded-lg border border-slate-300 dark:border-zinc-700 cursor-pointer transition-colors"
                     >
                       Set as Active CV
                     </button>
@@ -198,7 +198,7 @@ export const ResumeManagerPage = () => {
 
                   <button
                     onClick={() => setDeleteTarget(r)}
-                    className="p-2 text-zinc-500 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
+                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:text-zinc-500 dark:hover:text-rose-400 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
                     title="Delete version"
                   >
                     <Trash2 className="w-4 h-4" />
