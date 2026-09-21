@@ -1,44 +1,45 @@
 import { useState } from 'react';
 import { SectionHeader } from '../components/SectionHeader';
 import { ReadMoreModal } from '../components/ReadMoreModal';
-import { facultyData } from '../data/facultyData';
+import { usePortfolioData } from '../context/PortfolioDataContext';
 import { GraduationCap, Award, BookOpen, ChevronRight, CheckCircle2, Building2 } from 'lucide-react';
 
 export const AboutSection = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const { faculty, about } = usePortfolioData();
 
   return (
     <section id="about" className="pt-6 pb-10 bg-white dark:bg-[#0f172a] border-b border-[#ebebeb] dark:border-[#2e2e30]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="About Dr. Swati Vijay Shinde"
+          title={about?.heading || `About ${faculty.name}`}
           subtitle="Key academic credentials, institutional responsibilities, research direction, and 25 years of leadership."
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* LEFT: Profile Card */}
           <div className="lg:col-span-4">
             <div className="glass-card rounded-xl overflow-hidden shadow-md">
               <div className="bg-[#1e3a5f] dark:bg-[#162d4a] py-8 px-5 flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/90 shadow shrink-0">
-                  <img src="/dr-swati-shinde.jpg" alt={facultyData.name} className="w-full h-full object-cover object-top" />
+                  <img src="/dr-swati-shinde.jpg" alt={faculty.name} className="w-full h-full object-cover object-top" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white" style={{fontFamily: "'Merriweather', serif"}}>
-                    {facultyData.name}
+                    {faculty.name}
                   </h3>
                   <p className="text-xs text-blue-200 font-medium mt-0.5">
-                    {facultyData.primaryDesignation}
+                    {faculty.primaryDesignation}
                   </p>
                 </div>
               </div>
 
               <div className="divide-y divide-slate-100 dark:divide-slate-700 text-xs">
                 {[
-                  ['Department', 'Computer Engineering'],
-                  ['Institute', 'PCCoE Pune'],
-                  ['Experience', '25 Years (21 Approved)'],
+                  ['Department', faculty.department || 'Computer Engineering'],
+                  ['Institute', faculty.institution || 'PCCoE Pune'],
+                  ['Experience', `${faculty.totalExperience || '25 Years'} (${faculty.approvedExperience || '21'} Approved)`],
                   ['Doctoral Guide', 'SPPU Recognized'],
                 ].map(([label, value]) => (
                   <div key={label} className="flex justify-between px-5 py-3">
@@ -51,7 +52,7 @@ export const AboutSection = () => {
               <div className="px-5 py-4">
                 <button
                   onClick={() => setModalOpen(true)}
-                  className="btn-primary w-full justify-center"
+                  className="btn-primary w-full justify-center cursor-pointer"
                 >
                   <BookOpen className="w-4 h-4" />
                   Read Full Professional Bio
@@ -63,20 +64,20 @@ export const AboutSection = () => {
 
           {/* RIGHT: Details */}
           <div className="lg:col-span-8 space-y-5">
-            
+
             <div className="glass-card rounded-xl p-6">
               <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-2" style={{fontFamily: "'Merriweather', serif"}}>
                 25 Years of Academic & Research Leadership
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                {facultyData.bio}
+                {faculty.bio}
               </p>
             </div>
 
             {/* Metrics */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { value: '54', label: "Int'l Journals" },
+                { value: `${faculty.totalScopusPubs || 54}`, label: "Int'l Journals" },
                 { value: '82', label: 'Conferences' },
                 { value: '11', label: 'Patents' },
                 { value: '7', label: 'Books Authored' },

@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { X, Award, GraduationCap, Building2, BookOpen, CheckCircle, ShieldCheck } from 'lucide-react';
-import { facultyData } from '../data/facultyData';
+import { usePortfolioData } from '../context/PortfolioDataContext';
 
 export const ReadMoreModal = ({ isOpen, onClose }) => {
+  const { faculty } = usePortfolioData();
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
@@ -32,8 +34,8 @@ export const ReadMoreModal = ({ isOpen, onClose }) => {
               <GraduationCap className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-bold">{facultyData.name}</h3>
-              <p className="text-xs text-teal-300 font-medium">{facultyData.primaryDesignation}</p>
+              <h3 className="text-xl font-bold">{faculty.name}</h3>
+              <p className="text-xs text-teal-300 font-medium">{faculty.primaryDesignation}</p>
             </div>
           </div>
           <button
@@ -46,7 +48,7 @@ export const ReadMoreModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 md:p-8 overflow-y-auto space-y-8 flex-1 text-slate-700 dark:text-slate-300 text-sm md:text-base leading-relaxed">
+        <div className="p-6 md:p-8 overflow-y-auto space-y-8 flex-1 text-slate-700 dark:text-slate-300 text-sm md:text-base leading-relaxed custom-scrollbar">
           {/* Biography Paragraphs */}
           <div>
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
@@ -54,7 +56,7 @@ export const ReadMoreModal = ({ isOpen, onClose }) => {
               Full Professional Biography
             </h4>
             <div className="space-y-4 text-slate-600 dark:text-slate-300">
-              {facultyData.fullBioParagraphs.map((para, index) => (
+              {(faculty.fullBioParagraphs || []).map((para, index) => (
                 <p key={index}>{para}</p>
               ))}
             </div>
@@ -68,9 +70,9 @@ export const ReadMoreModal = ({ isOpen, onClose }) => {
                 Institutional Affiliation
               </h5>
               <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
-                <strong>Department:</strong> {facultyData.department}<br />
-                <strong>Institute:</strong> {facultyData.institution}<br />
-                <strong>Location:</strong> {facultyData.address}
+                <strong>Department:</strong> {faculty.department}<br />
+                <strong>Institute:</strong> {faculty.institution}<br />
+                <strong>Location:</strong> {faculty.address}
               </p>
             </div>
             <div>
@@ -79,8 +81,8 @@ export const ReadMoreModal = ({ isOpen, onClose }) => {
                 Experience Summary
               </h5>
               <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
-                <strong>Total Experience:</strong> {facultyData.totalExperience}<br />
-                <strong>Approved Experience:</strong> {facultyData.approvedExperience}<br />
+                <strong>Total Experience:</strong> {faculty.totalExperience}<br />
+                <strong>Approved Experience:</strong> {faculty.approvedExperience}<br />
                 <strong>Ph.D. Guide Status:</strong> Recognized SPPU Doctoral Guide
               </p>
             </div>
@@ -93,7 +95,7 @@ export const ReadMoreModal = ({ isOpen, onClose }) => {
               Global Certifications & Credentials
             </h4>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm">
-              {facultyData.certifications.map((cert, index) => (
+              {(faculty.certifications || []).map((cert, index) => (
                 <li key={index} className="flex items-start gap-2 bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xs">
                   <CheckCircle className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" />
                   <span className="text-slate-800 dark:text-slate-200">{cert}</span>

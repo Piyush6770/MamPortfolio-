@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { SectionHeader } from '../components/SectionHeader';
-import { achievementsData } from '../data/achievements';
+import { usePortfolioData } from '../context/PortfolioDataContext';
 import { Award } from 'lucide-react';
 
 export const AchievementsSection = () => {
+  const { achievements } = usePortfolioData();
   const [filter, setFilter] = useState('all');
-  const filtered = achievementsData.filter(item => filter !== 'all' ? item.category === filter : true);
+  const filtered = achievements.filter(item => filter !== 'all' ? item.category === filter : true);
 
   return (
     <section id="achievements" className="py-16 bg-white dark:bg-[#0f172a] border-b border-[#ebebeb] dark:border-[#2e2e30]">
@@ -20,7 +21,7 @@ export const AchievementsSection = () => {
                 filter === cat
                   ? 'bg-[#1e3a5f] text-white font-bold shadow'
                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-300'}`}>
-              {cat === 'all' ? `All (${achievementsData.length})` : cat}
+              {cat === 'all' ? `All (${achievements.length})` : cat}
             </button>
           ))}
         </div>

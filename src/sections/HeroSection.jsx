@@ -1,7 +1,9 @@
 import { ArrowRight, BookOpen, ExternalLink, Mail, GraduationCap, Cpu, ShieldCheck, FileCheck, Layers } from 'lucide-react';
-import { facultyData } from '../data/facultyData';
+import { usePortfolioData } from '../context/PortfolioDataContext';
 
 export const HeroSection = ({ setActivePage }) => {
+  const { faculty, hero } = usePortfolioData();
+
   const navigateTo = (pageId) => {
     if (setActivePage) {
       setActivePage(pageId);
@@ -18,9 +20,9 @@ export const HeroSection = ({ setActivePage }) => {
   ];
 
   const metrics = [
-    { value: '25 Yrs', label: 'Experience' },
-    { value: '1040+', label: 'Citations' },
-    { value: '136+', label: 'Papers' },
+    { value: faculty.totalExperience || '25 Yrs', label: 'Experience' },
+    { value: `${faculty.citationsGoogleScholar || 1040}+`, label: 'Citations' },
+    { value: `${faculty.totalScopusPubs || 73}+`, label: 'Scopus Papers' },
     { value: '₹54L+', label: 'Grants' },
   ];
 
@@ -28,23 +30,23 @@ export const HeroSection = ({ setActivePage }) => {
     <section id="home" className="pt-6 pb-10 bg-white dark:bg-[#0f172a] border-b border-[#ebebeb] dark:border-[#2e2e30]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
+
           {/* Left Column */}
           <div className="lg:col-span-8 space-y-5">
-            
+
             {/* Identity */}
             <div>
               <span className="badge-accent mb-4 inline-block">
-                SPPU Recognized Ph.D. Guide • NVIDIA Ambassador
+                {hero?.badge_text || 'SPPU Recognized Ph.D. Guide • NVIDIA Ambassador'}
               </span>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1e3a5f] dark:text-blue-100 tracking-tight leading-tight" style={{fontFamily: "'Merriweather', Georgia, serif"}}>
-                {facultyData.name}
+                {hero?.name || faculty.name}
               </h1>
               <p className="text-lg font-semibold text-blue-700 dark:text-blue-400 mt-2">
-                {facultyData.primaryDesignation}
+                {hero?.title || faculty.primaryDesignation}
               </p>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
-                {facultyData.department} • {facultyData.institution}
+                {hero?.subtitle || `${faculty.department} • ${faculty.institution}`}
               </p>
             </div>
 
@@ -77,7 +79,7 @@ export const HeroSection = ({ setActivePage }) => {
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2">
                 <button onClick={() => navigateTo('research')} className="btn-primary">
-                  Explore Research <ArrowRight className="w-4 h-4" />
+                  {hero?.primary_cta_text || 'Explore Research'} <ArrowRight className="w-4 h-4" />
                 </button>
                 <button onClick={() => navigateTo('publications')} className="btn-outline">
                   <BookOpen className="w-4 h-4" /> Publications
@@ -89,15 +91,15 @@ export const HeroSection = ({ setActivePage }) => {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Profiles:</span>
                 {[
-                  [facultyData.socialLinks.googleScholar, 'Google Scholar'],
-                  [facultyData.socialLinks.scopus, 'Scopus'],
-                  [facultyData.socialLinks.linkedIn, 'LinkedIn'],
-                  [`mailto:${facultyData.emails[0]}`, 'Email'],
+                  [faculty.socialLinks.googleScholar, 'Google Scholar'],
+                  [faculty.socialLinks.scopus, 'Scopus'],
+                  [faculty.socialLinks.linkedIn, 'LinkedIn'],
+                  [`mailto:${faculty.emails[0]}`, 'Email'],
                 ].map(([href, label]) => (
-                  <a key={label} href={href} target={href.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer"
+                  <a key={label} href={href} target={href?.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer"
                     className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold glass-card rounded text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
-                    {label} {!href.startsWith('mailto') && <ExternalLink className="w-3 h-3" />}
-                    {href.startsWith('mailto') && <Mail className="w-3 h-3" />}
+                    {label} {!href?.startsWith('mailto') && <ExternalLink className="w-3 h-3" />}
+                    {href?.startsWith('mailto') && <Mail className="w-3 h-3" />}
                   </a>
                 ))}
               </div>
@@ -111,9 +113,9 @@ export const HeroSection = ({ setActivePage }) => {
               {/* Navy header */}
               <div className="bg-[#1e3a5f] dark:bg-[#162d4a] py-10 px-6 flex flex-col items-center text-center">
                 <div className="w-24 h-24 rounded-full overflow-hidden border-3 border-white/90 shadow-xl mb-3 shrink-0">
-                  <img src="/dr-swati-shinde.jpg" alt={facultyData.name} className="w-full h-full object-cover object-top" />
+                  <img src={hero?.hero_image_url || "/dr-swati-shinde.jpg"} alt={faculty.name} className="w-full h-full object-cover object-top" />
                 </div>
-                <h3 className="text-lg font-bold text-white" style={{fontFamily: "'Merriweather', serif"}}>{facultyData.name}</h3>
+                <h3 className="text-lg font-bold text-white" style={{fontFamily: "'Merriweather', serif"}}>{faculty.name}</h3>
                 <p className="text-xs text-blue-200 font-semibold mt-1">Ph.D. (CSE), M.E., B.E.</p>
                 <p className="text-xs text-blue-300 mt-0.5">Professor, Computer Engineering</p>
                 <span className="mt-3 px-3 py-1 rounded-full bg-blue-500/30 text-blue-200 border border-blue-400/30 text-[11px] font-bold">
@@ -126,7 +128,7 @@ export const HeroSection = ({ setActivePage }) => {
                   ['Ph.D. Guide', 'SPPU Approved'],
                   ['Books Authored', '7 Books'],
                   ['Patents & IP', '15 (11 Patents, 4 Copyrights)'],
-                  ['Total Experience', '25 Years'],
+                  ['Total Experience', faculty.totalExperience || '25 Years'],
                 ].map(([label, value]) => (
                   <div key={label} className="flex justify-between px-5 py-3">
                     <span className="text-slate-500 dark:text-slate-400">{label}</span>

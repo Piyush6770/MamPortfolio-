@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { SectionHeader } from '../components/SectionHeader';
-import { patentsData, copyrightsData } from '../data/patents';
+import { usePortfolioData } from '../context/PortfolioDataContext';
 import { ShieldCheck, FileCheck } from 'lucide-react';
 
 export const PatentsSection = () => {
+  const { patents, copyrights } = usePortfolioData();
   const [activeTab, setActiveTab] = useState('all');
-  const grantedCount = patentsData.filter(p => p.status === 'Granted').length;
-  const filtered = activeTab === 'granted' ? patentsData.filter(p => p.status === 'Granted') : patentsData;
+  const grantedCount = patents.filter(p => p.status === 'Granted').length;
+  const filtered = activeTab === 'granted' ? patents.filter(p => p.status === 'Granted') : patents;
 
   return (
     <section id="patents" className="py-16 bg-white dark:bg-[#0f172a] border-b border-[#ebebeb] dark:border-[#2e2e30]">
@@ -14,7 +15,7 @@ export const PatentsSection = () => {
         <SectionHeader badge="INTELLECTUAL PROPERTY" title="Patents & Copyrights" subtitle="Official patent grants, design registrations, and copyrights filed and granted." />
 
         <div className="flex space-x-6 border-b border-slate-200 dark:border-slate-700 mb-8 text-sm font-semibold">
-          {[['all', `All Patents (${patentsData.length})`], ['granted', `Granted (${grantedCount})`], ['copyrights', `Copyrights (${copyrightsData.length})`]].map(([id, label]) => (
+          {[['all', `All Patents (${patents.length})`], ['granted', `Granted (${grantedCount})`], ['copyrights', `Copyrights (${copyrights.length})`]].map(([id, label]) => (
             <button key={id} onClick={() => setActiveTab(id)}
               className={`pb-3 border-b-2 transition-all cursor-pointer ${activeTab === id ? 'tab-active' : 'tab-inactive'}`}>
               {label}
@@ -33,12 +34,12 @@ export const PatentsSection = () => {
                     'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'}`}>
                     {item.status}
                   </span>
-                  <span className="text-xs font-mono text-slate-400">{item.authorNumber}</span>
+                  <span className="text-xs font-mono text-slate-400">{item.author_number || item.authorNumber}</span>
                 </div>
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug mb-3" style={{fontFamily: "'Merriweather', serif"}}>{item.title}</h3>
                 <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-700">
-                  <span>App: {item.applicationNo}</span>
-                  {item.patentNo && <span className="font-bold text-blue-700 dark:text-blue-400">{item.patentNo}</span>}
+                  <span>App: {item.application_no || item.applicationNo}</span>
+                  {(item.patent_no || item.patentNo) && <span className="font-bold text-blue-700 dark:text-blue-400">{item.patent_no || item.patentNo}</span>}
                 </div>
               </div>
             ))}
@@ -48,15 +49,15 @@ export const PatentsSection = () => {
         {(activeTab === 'copyrights' || activeTab === 'all') && (
           <div>
             <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2" style={{fontFamily: "'Merriweather', serif"}}>
-              <FileCheck className="w-4 h-4 text-blue-600" /> Copyright Registrations ({copyrightsData.length})
+              <FileCheck className="w-4 h-4 text-blue-600" /> Copyright Registrations ({copyrights.length})
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {copyrightsData.map((cpr) => (
+              {copyrights.map((cpr) => (
                 <div key={cpr.id} className="glass-card rounded-lg p-4 flex items-start justify-between">
                   <div>
                     <span className="text-[10px] font-bold uppercase text-blue-700 dark:text-blue-400">Granted Copyright</span>
                     <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mt-0.5">{cpr.title}</h4>
-                    <p className="text-xs text-slate-500 mt-0.5">{cpr.authorNumber} • Granted {cpr.year}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{cpr.author_number || cpr.authorNumber} • Granted {cpr.year}</p>
                   </div>
                   <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-1" />
                 </div>

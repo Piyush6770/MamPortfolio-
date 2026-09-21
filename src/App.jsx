@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { PortfolioDataProvider, usePortfolioData } from './context/PortfolioDataContext';
+
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './sections/HeroSection';
 import { AboutSection } from './sections/AboutSection';
@@ -19,7 +21,7 @@ import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 
 function getInitialPage() {
-  const hash = window.location.hash.replace(/^#\//, '');
+  const hash = window.location.hash.replace(/^#\//, '').replace(/^#/, '');
   const validPages = [
     'home', 'about', 'journey', 'research', 'publications',
     'patents', 'projects', 'guidance', 'academic', 'books',
@@ -31,9 +33,10 @@ function getInitialPage() {
   return 'home';
 }
 
-export function App() {
+function MainApp() {
   const [activePage, setActivePage] = useState(getInitialPage);
   const [darkMode, setDarkMode] = useState(false);
+  const { isSectionVisible } = usePortfolioData();
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -42,7 +45,11 @@ export function App() {
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -58,9 +65,9 @@ export function App() {
       case 'home':
         return (
           <div className="page-container space-y-4">
-            <HeroSection setActivePage={setActivePage} />
-            <AboutSection />
-            <AchievementsSection />
+            {isSectionVisible('hero') && <HeroSection setActivePage={setActivePage} />}
+            {isSectionVisible('about') && <AboutSection />}
+            {isSectionVisible('achievements') && <AchievementsSection />}
           </div>
         );
       case 'about':
@@ -73,7 +80,7 @@ export function App() {
         return (
           <div className="page-container space-y-4">
             <JourneyTimelineSection />
-            <AchievementsSection />
+            {isSectionVisible('achievements') && <AchievementsSection />}
           </div>
         );
       case 'research':
@@ -162,6 +169,14 @@ export function App() {
       {/* Floating Scroll To Top */}
       <ScrollToTop />
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <PortfolioDataProvider>
+      <MainApp />
+    </PortfolioDataProvider>
   );
 }
 

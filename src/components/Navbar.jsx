@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Menu, X, Sun, Moon, ChevronDown, GraduationCap, Mail } from 'lucide-react';
-import { facultyData } from '../data/facultyData';
+import { usePortfolioData } from '../context/PortfolioDataContext';
 
 const navGroups = [
   { label: 'Home', id: 'home', single: true },
@@ -51,7 +51,7 @@ function DropdownMenu({ group, activePage, onNav, closeAll }) {
         className={`flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer
           ${isActive
             ? 'bg-[#1e3a5f] text-white'
-            : 'text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-100'
+            : 'text-slate-600 dark:text-slate-300 hover:text-[#1e3a5f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
       >
         {group.label}
@@ -59,15 +59,15 @@ function DropdownMenu({ group, activePage, onNav, closeAll }) {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-lg z-50 py-1 overflow-hidden">
+        <div className="absolute top-full left-0 mt-1.5 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg z-50 py-1 overflow-hidden">
           {group.children.map((item) => (
             <button
               key={item.id}
               onClick={() => { onNav(item.id); setOpen(false); }}
               className={`w-full text-left px-4 py-2.5 text-sm transition-colors cursor-pointer
                 ${activePage === item.id
-                  ? 'bg-slate-100 text-[#1e3a5f] font-semibold'
-                  : 'text-slate-700 hover:bg-slate-50 hover:text-[#1e3a5f]'
+                  ? 'bg-slate-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-blue-400 font-semibold'
+                  : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#1e3a5f]'
                 }`}
             >
               {item.label}
@@ -82,6 +82,7 @@ function DropdownMenu({ group, activePage, onNav, closeAll }) {
 export const Navbar = ({ activePage, setActivePage, darkMode, setDarkMode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(null);
+  const { faculty } = usePortfolioData();
 
   const handleNav = (pageId) => {
     setActivePage(pageId);
@@ -102,11 +103,13 @@ export const Navbar = ({ activePage, setActivePage, darkMode, setDarkMode }) => 
             className="flex items-center gap-2.5 cursor-pointer group shrink-0"
           >
             <div className="w-9 h-9 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600 shadow-sm shrink-0">
-              <img src="/dr-swati-shinde.jpg" alt={facultyData.name} className="w-full h-full object-cover object-top" />
+              <img src="/dr-swati-shinde.jpg" alt={faculty.name} className="w-full h-full object-cover object-top" />
             </div>
             <div className="text-left leading-tight">
-              <div className="text-sm font-bold text-[#1e3a5f] dark:text-white">Dr. Swati V. Shinde</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Dean MIS · Professor · PCCoE</div>
+              <div className="text-sm font-bold text-[#1e3a5f] dark:text-white">{faculty.name}</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate max-w-[200px] sm:max-w-xs">
+                Dean MIS · Professor · PCCoE
+              </div>
             </div>
           </button>
 
@@ -155,7 +158,7 @@ export const Navbar = ({ activePage, setActivePage, darkMode, setDarkMode }) => 
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 rounded-md text-slate-500 hover:bg-slate-100 transition-all cursor-pointer"
+              className="lg:hidden p-2 rounded-md text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>

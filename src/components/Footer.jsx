@@ -1,7 +1,9 @@
 import { GraduationCap, Mail, MapPin, Phone, ExternalLink, ChevronRight } from 'lucide-react';
-import { facultyData } from '../data/facultyData';
+import { usePortfolioData } from '../context/PortfolioDataContext';
 
 export const Footer = ({ setActivePage }) => {
+  const { faculty } = usePortfolioData();
+
   const navigateTo = (pageId) => {
     if (setActivePage) {
       setActivePage(pageId);
@@ -14,19 +16,19 @@ export const Footer = ({ setActivePage }) => {
     <footer className="bg-[#1e3a5f] text-white text-xs sm:text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10 text-left">
-          
+
           {/* Col 1: Identity */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2.5">
               <div className="w-10 h-10 rounded-full overflow-hidden border border-blue-400/40 shrink-0">
-                <img src="/dr-swati-shinde.jpg" alt={facultyData.name} className="w-full h-full object-cover object-top" />
+                <img src="/dr-swati-shinde.jpg" alt={faculty.name} className="w-full h-full object-cover object-top" />
               </div>
               <h3 className="text-base font-bold text-white" style={{fontFamily: "'Merriweather', serif"}}>
-                Dr. Swati Vijay Shinde
+                {faculty.name}
               </h3>
             </div>
             <p className="text-xs text-blue-200 leading-relaxed">
-              {facultyData.primaryDesignation}. Specialized in Artificial Intelligence, Machine Learning, Deep Learning, and Medical Diagnostics.
+              {faculty.primaryDesignation}. Specialized in Artificial Intelligence, Machine Learning, Deep Learning, and Medical Diagnostics.
             </p>
           </div>
 
@@ -60,10 +62,10 @@ export const Footer = ({ setActivePage }) => {
             </h4>
             <ul className="space-y-1.5 text-xs text-blue-100">
               {[
-                [facultyData.socialLinks.googleScholar, 'Google Scholar (1040+ Citations)'],
-                [facultyData.socialLinks.scopus, 'Scopus Profile (73 Pubs)'],
-                [facultyData.socialLinks.linkedIn, 'LinkedIn Profile'],
-                [facultyData.socialLinks.youtube, 'YouTube Channel'],
+                [faculty.socialLinks.googleScholar, `Google Scholar (${faculty.citationsGoogleScholar || 1040}+ Citations)`],
+                [faculty.socialLinks.scopus, `Scopus Profile (${faculty.totalScopusPubs || 73} Pubs)`],
+                [faculty.socialLinks.linkedIn, 'LinkedIn Profile'],
+                [faculty.socialLinks.youtube, 'YouTube Channel'],
               ].map(([href, label]) => (
                 <li key={label}>
                   <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center justify-between group transition-colors">
@@ -83,17 +85,17 @@ export const Footer = ({ setActivePage }) => {
             <ul className="space-y-2.5 text-xs text-blue-100">
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                <span>{facultyData.institution}, {facultyData.address}</span>
+                <span>{faculty.institution}, {faculty.address}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-                <a href={`mailto:${facultyData.emails[0]}`} className="hover:text-white transition-colors">
-                  {facultyData.emails[0]}
+                <a href={`mailto:${faculty.emails[0]}`} className="hover:text-white transition-colors">
+                  {faculty.emails[0]}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>{facultyData.phoneOffice}</span>
+                <span>{faculty.phoneOffice}</span>
               </li>
             </ul>
           </div>
@@ -101,8 +103,8 @@ export const Footer = ({ setActivePage }) => {
         </div>
 
         <div className="pt-8 border-t border-white/10 text-xs text-blue-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <p>© 2026 Dr. Swati Vijay Shinde. All rights reserved.</p>
-          <div className="flex flex-wrap gap-4">
+          <p>© 2026 {faculty.name}. All rights reserved.</p>
+          <div className="flex flex-wrap items-center gap-4">
             {[['home','Home'],['about','About'],['publications','Publications'],['patents','Patents'],['books','Books'],['contact','Contact']].map(([id, label]) => (
               <button key={id} onClick={() => navigateTo(id)} className="hover:text-white transition-colors cursor-pointer">{label}</button>
             ))}

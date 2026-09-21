@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { SectionHeader } from '../components/SectionHeader';
-import { facultyData } from '../data/facultyData';
+import { usePortfolioData } from '../context/PortfolioDataContext';
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ContactSection = () => {
+  const { faculty, contactInfo } = usePortfolioData();
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState('idle');
 
@@ -22,10 +23,10 @@ export const ContactSection = () => {
     <section id="contact" className="py-16 bg-white dark:bg-[#0f172a] border-b border-[#ebebeb] dark:border-[#2e2e30]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader badge="OFFICE & CONTACT" title="Contact Information"
-          subtitle="Direct contact channels, department location, and inquiry form." />
+          subtitle={contactInfo?.contact_cta_text || "Direct contact channels, department location, and inquiry form."} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Office Info */}
           <div className="lg:col-span-5">
             <div className="glass-card rounded-xl overflow-hidden shadow-md">
@@ -37,25 +38,25 @@ export const ContactSection = () => {
                   <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                   <div>
                     <div className="font-semibold text-slate-800 dark:text-slate-100">Department Office</div>
-                    <p className="text-xs mt-0.5">{facultyData.department}</p>
-                    <p className="text-xs">{facultyData.institution}</p>
-                    <p className="text-xs">{facultyData.address}</p>
+                    <p className="text-xs mt-0.5">{faculty.department}</p>
+                    <p className="text-xs">{faculty.institution}</p>
+                    <p className="text-xs">{faculty.address}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Mail className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                   <div>
                     <div className="font-semibold text-slate-800 dark:text-slate-100">Email</div>
-                    <a href={`mailto:${facultyData.emails[0]}`} className="text-xs text-blue-700 dark:text-blue-400 hover:underline">{facultyData.emails[0]}</a>
-                    <p className="text-xs text-slate-500">{facultyData.emails[1]}</p>
+                    <a href={`mailto:${faculty.emails[0]}`} className="text-xs text-blue-700 dark:text-blue-400 hover:underline">{faculty.emails[0]}</a>
+                    {faculty.emails[1] && <p className="text-xs text-slate-500">{faculty.emails[1]}</p>}
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Phone className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                   <div>
                     <div className="font-semibold text-slate-800 dark:text-slate-100">Phone</div>
-                    <p className="text-xs">Office: {facultyData.phoneOffice}</p>
-                    <p className="text-xs">Cell: {facultyData.phoneMobile}</p>
+                    <p className="text-xs">Office: {faculty.phoneOffice}</p>
+                    <p className="text-xs">Cell: {faculty.phoneMobile}</p>
                   </div>
                 </div>
               </div>
@@ -81,31 +82,37 @@ export const ContactSection = () => {
                     Please fill in all required fields.
                   </div>
                 )}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {[['name', 'Full Name *', 'e.g. Dr. Ramesh Kumar', 'text'], ['email', 'Email Address *', 'e.g. ramesh@institution.edu', 'email']].map(([field, label, placeholder, type]) => (
-                      <div key={field}>
-                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{label}</label>
-                        <input type={type} placeholder={placeholder} value={formData[field]} onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-                          className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500" />
-                      </div>
-                    ))}
+                {contactInfo?.form_enabled !== false ? (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {[['name', 'Full Name *', 'e.g. Dr. Ramesh Kumar', 'text'], ['email', 'Email Address *', 'e.g. ramesh@institution.edu', 'email']].map(([field, label, placeholder, type]) => (
+                        <div key={field}>
+                          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{label}</label>
+                          <input type={type} placeholder={placeholder} value={formData[field]} onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
+                            className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500" />
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject / Topic</label>
+                      <input type="text" placeholder="e.g. Research Collaboration Inquiry" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Message *</label>
+                      <textarea rows={4} placeholder="Write your inquiry here..." value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500" />
+                    </div>
+                    <button type="submit" disabled={status === 'submitting'} className="btn-primary w-full justify-center cursor-pointer">
+                      <Send className="w-4 h-4" />
+                      {status === 'submitting' ? 'Sending...' : 'Send Message'}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="py-8 text-center text-xs text-slate-500">
+                    Contact form is currently offline. Please reach out via official email above.
                   </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject / Topic</label>
-                    <input type="text" placeholder="e.g. Research Collaboration Inquiry" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Message *</label>
-                    <textarea rows={4} placeholder="Write your inquiry here..." value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500" />
-                  </div>
-                  <button type="submit" disabled={status === 'submitting'} className="btn-primary w-full justify-center">
-                    <Send className="w-4 h-4" />
-                    {status === 'submitting' ? 'Sending...' : 'Send Message'}
-                  </button>
-                </form>
+                )}
               </div>
             </div>
           </div>
