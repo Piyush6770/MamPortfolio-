@@ -6,70 +6,16 @@ import { achievementsData } from '../../data/achievements';
 import { patentsData, copyrightsData } from '../../data/patents';
 import { booksData, bookChaptersData } from '../../data/books';
 import { phdScholars, pgScholars } from '../../data/guidance';
-import { expertTalksData, organizedEventsData, establishedLabsData } from '../../data/talksAndEvents';
+import { expertTalksData, organizedEventsData } from '../../data/talksAndEvents';
 import { galleryData } from '../../data/galleryData';
 import { journalPublications, conferencePublications } from '../../data/publications';
 
 // Helper to run a promise with a timeout
-const withTimeout = (promise, timeoutMs = 3000) => {
+const withTimeout = (promise, timeoutMs = 8000) => {
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error('Backend request timeout')), timeoutMs)),
   ]);
-};
-
-// API Bridge helper to seamlessly save/load between Admin and Public website in real time
-const apiBridge = {
-  async fetchTable(tableName) {
-    try {
-      const res = await fetch(`/api/portfolio/${tableName}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.success && json.data) {
-          return json.data;
-        }
-      }
-    } catch (_) {}
-    return null;
-  },
-
-  async postData(tableName, payload) {
-    try {
-      const res = await fetch(`/api/portfolio/${tableName}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        return json.data || payload;
-      }
-    } catch (_) {}
-    return payload;
-  },
-
-  async putData(tableName, id, payload) {
-    try {
-      const res = await fetch(`/api/portfolio/${tableName}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        return json.data || payload;
-      }
-    } catch (_) {}
-    return payload;
-  },
-
-  async deleteData(tableName, id) {
-    try {
-      await fetch(`/api/portfolio/${tableName}/${id}`, {
-        method: 'DELETE',
-      });
-    } catch (_) {}
-  },
 };
 
 // Default seed generators for each table
@@ -173,9 +119,9 @@ const getDefaultDataForTable = (tableName) => {
       return projectsData.map((p, idx) => ({
         id: p.id || `proj-${idx + 1}`,
         title: p.title,
-        funding_agency: p.fundingAgency || p.grantAgency || 'DST, Govt of India',
+        funding_agency: p.fundingAgency || p.grantAgency || p.agency || 'DST, Govt of India',
         grant_amount: p.grantAmount || p.amount || '₹ 45.00 Lakhs',
-        duration: p.duration || p.year || '2023 - Present',
+        duration: p.duration || p.period || p.year || '2023 - Present',
         status: p.status || 'Ongoing',
         role: p.role || 'Principal Investigator',
         description: p.description || p.abstract || '',
@@ -459,16 +405,32 @@ const getDefaultDataForTable = (tableName) => {
   }
 };
 
-// Generic Collection CRUD Helper with local API + local storage + Supabase background sync
+// Generic Collection CRUD Helper with direct Supabase access + local storage cache
 const createTableService = (tableName, defaultSort = 'display_order') => {
   return {
     async getAll(includeDrafts = true) {
-      // 1. Try local data API first for immediate cross-app dev sync
-      const apiData = await apiBridge.fetchTable(tableName);
-      if (Array.isArray(apiData) && apiData.length > 0) {
-        localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(apiData));
-        const filtered = apiData.filter(i => includeDrafts || (i.publish_status === 'published' && i.is_visible !== false));
-        return { data: filtered, error: null };
+      // 1. Try Supabase if configured (primary source of truth)
+      if (isSupabaseConfigured && supabase) {
+        try {
+          let query = supabase.from(tableName).select('*');
+          if (!includeDrafts) {
+            query = query.eq('publish_status', 'published').eq('is_visible', true);
+          }
+          if (defaultSort) {
+            query = query.order(defaultSort, { ascending: true });
+          }
+
+          const { data, error } = await withTimeout(query, 5000);
+          if (!error && Array.isArray(data) && data.length > 0) {
+            localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(data));
+            return {
+              data: includeDrafts ? data : data.filter((i) => i.publish_status === 'published' && i.is_visible !== false),
+              error: null,
+            };
+          }
+        } catch (err) {
+          console.warn(`[Supabase GetAll Notice] ${tableName}:`, err.message || err);
+        }
       }
 
       // 2. Check local storage cache
@@ -481,128 +443,182 @@ const createTableService = (tableName, defaultSort = 'display_order') => {
         } catch (_) {}
       }
 
-      // If no data exists yet, initialize with default faculty data
+      // 3. Fallback to default faculty dataset
       if (!currentItems || currentItems.length === 0) {
         const defaults = getDefaultDataForTable(tableName);
         if (Array.isArray(defaults) && defaults.length > 0) {
           currentItems = defaults;
           localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(defaults));
-          apiBridge.postData(tableName, defaults).catch(() => {});
         }
       }
 
-      // 3. Try Supabase if configured (for production)
-      if (isSupabaseConfigured && supabase) {
-        try {
-          let query = supabase.from(tableName).select('*');
-          if (!includeDrafts) {
-            query = query.eq('publish_status', 'published').eq('is_visible', true);
-          }
-          if (defaultSort) {
-            query = query.order(defaultSort, { ascending: true });
-          }
-
-          const { data, error } = await withTimeout(query, 2000);
-          if (!error && data && data.length > 0) {
-            localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(data));
-            return { data: includeDrafts ? data : data.filter(i => i.publish_status === 'published' && i.is_visible !== false), error: null };
-          }
-        } catch (_) {}
-      }
-
-      const filtered = (currentItems || []).filter(i => includeDrafts || (i.publish_status === 'published' && i.is_visible !== false));
+      const filtered = (currentItems || []).filter(
+        (i) => includeDrafts || (i.publish_status === 'published' && i.is_visible !== false)
+      );
       return { data: filtered, error: null };
     },
 
     async getById(id) {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from(tableName).select('*').eq('id', id).maybeSingle();
+          if (!error && data) return { data, error: null };
+        } catch (_) {}
+      }
       const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
-      const item = local.find(i => String(i.id) === String(id));
+      const item = local.find((i) => String(i.id) === String(id));
       return { data: item || null, error: null };
     },
 
     async create(payload) {
-      const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
+      const generatedId =
+        payload.id ||
+        (typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${tableName.slice(0, 4)}-${Date.now()}`);
+
       const newItem = {
         ...payload,
-        id: payload.id || `local-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-        created_at: new Date().toISOString(),
+        id: generatedId,
+        created_at: payload.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      const updated = [...local, newItem];
-      localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
-      await auditService.log('CREATE', tableName, newItem.id, { name: payload.title || payload.name || payload.role });
-      window.dispatchEvent(new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'create' } }));
 
-      // Save to shared dev API bridge
-      apiBridge.postData(tableName, newItem).catch(() => {});
-
-      // Background Supabase attempt
       if (isSupabaseConfigured && supabase) {
-        supabase.from(tableName).insert([newItem]).then(({ error }) => {
-          if (error) console.info(`[Supabase Sync] ${tableName} insert:`, error.message);
-        }).catch(() => {});
+        try {
+          const { data, error } = await supabase.from(tableName).insert([newItem]).select().maybeSingle();
+          if (error) {
+            console.error(`[Supabase Insert Error] ${tableName}:`, error.message || error);
+            return { data: null, error };
+          }
+          const savedItem = data || newItem;
+          const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
+          const updated = [...local.filter((i) => String(i.id) !== String(savedItem.id)), savedItem];
+          localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
+          await auditService.log('CREATE', tableName, savedItem.id, {
+            name: payload.title || payload.name || payload.role,
+          });
+          window.dispatchEvent(
+            new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'create' } })
+          );
+          return { data: savedItem, error: null };
+        } catch (err) {
+          console.error(`[Supabase Insert Exception] ${tableName}:`, err);
+          return { data: null, error: err };
+        }
       }
 
+      // Offline / Local fallback mode
+      const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
+      const updated = [...local.filter((i) => String(i.id) !== String(newItem.id)), newItem];
+      localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
+      await auditService.log('CREATE', tableName, newItem.id, {
+        name: payload.title || payload.name || payload.role,
+      });
+      window.dispatchEvent(
+        new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'create' } })
+      );
       return { data: newItem, error: null };
     },
 
     async update(id, payload) {
-      const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
-      const updated = local.map(i => String(i.id) === String(id) ? { ...i, ...payload, updated_at: new Date().toISOString() } : i);
-      localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
-      await auditService.log('UPDATE', tableName, id, payload);
-      window.dispatchEvent(new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'update' } }));
-      const item = updated.find(i => String(i.id) === String(id)) || payload;
+      const updatePayload = {
+        ...payload,
+        updated_at: new Date().toISOString(),
+      };
 
-      // Save to shared dev API bridge
-      apiBridge.putData(tableName, id, payload).catch(() => {});
-
-      // Background Supabase attempt
       if (isSupabaseConfigured && supabase) {
-        supabase.from(tableName).update(payload).eq('id', id).then(({ error }) => {
-          if (error) console.info(`[Supabase Sync] ${tableName} update:`, error.message);
-        }).catch(() => {});
+        try {
+          const { data, error } = await supabase
+            .from(tableName)
+            .update(updatePayload)
+            .eq('id', id)
+            .select()
+            .maybeSingle();
+
+          if (error) {
+            console.error(`[Supabase Update Error] ${tableName}:`, error.message || error);
+            return { data: null, error };
+          }
+
+          const savedItem = data || { ...payload, id };
+          const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
+          const updated = local.map((i) => (String(i.id) === String(id) ? { ...i, ...savedItem } : i));
+          localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
+          await auditService.log('UPDATE', tableName, id, payload);
+          window.dispatchEvent(
+            new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'update' } })
+          );
+          return { data: savedItem, error: null };
+        } catch (err) {
+          console.error(`[Supabase Update Exception] ${tableName}:`, err);
+          return { data: null, error: err };
+        }
       }
 
-      return { data: item, error: null };
+      // Offline / Local fallback mode
+      const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
+      const updated = local.map((i) =>
+        String(i.id) === String(id) ? { ...i, ...payload, updated_at: new Date().toISOString() } : i
+      );
+      localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
+      await auditService.log('UPDATE', tableName, id, payload);
+      window.dispatchEvent(
+        new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'update' } })
+      );
+      return { data: updated.find((i) => String(i.id) === String(id)) || payload, error: null };
     },
 
     async delete(id) {
-      const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
-      const updated = local.filter(i => String(i.id) !== String(id));
-      localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
-      await auditService.log('DELETE', tableName, id);
-      window.dispatchEvent(new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'delete' } }));
-
-      // Remove from shared dev API bridge
-      apiBridge.deleteData(tableName, id).catch(() => {});
-
-      // Background Supabase attempt
       if (isSupabaseConfigured && supabase) {
-        supabase.from(tableName).delete().eq('id', id).then(({ error }) => {
-          if (error) console.info(`[Supabase Sync] ${tableName} delete:`, error.message);
-        }).catch(() => {});
+        try {
+          const { error } = await supabase.from(tableName).delete().eq('id', id);
+          if (error) {
+            console.error(`[Supabase Delete Error] ${tableName}:`, error.message || error);
+            return { error };
+          }
+        } catch (err) {
+          console.error(`[Supabase Delete Exception] ${tableName}:`, err);
+          return { error: err };
+        }
       }
 
+      const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
+      const updated = local.filter((i) => String(i.id) !== String(id));
+      localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
+      await auditService.log('DELETE', tableName, id);
+      window.dispatchEvent(
+        new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'delete' } })
+      );
       return { error: null };
     },
 
     async reorder(items) {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const updates = items.map((it) =>
+            supabase.from(tableName).update({ display_order: it.display_order }).eq('id', it.id)
+          );
+          await Promise.all(updates);
+        } catch (err) {
+          console.error(`[Supabase Reorder Error] ${tableName}:`, err.message || err);
+        }
+      }
+
       const local = JSON.parse(localStorage.getItem(`portfolio_${tableName}`) || '[]');
-      const orderMap = new Map(items.map(i => [String(i.id), i.display_order]));
-      const updated = local.map(item => ({
-        ...item,
-        display_order: orderMap.has(String(item.id)) ? orderMap.get(String(item.id)) : item.display_order,
-      })).sort((a, b) => a.display_order - b.display_order);
+      const orderMap = new Map(items.map((i) => [String(i.id), i.display_order]));
+      const updated = local
+        .map((item) => ({
+          ...item,
+          display_order: orderMap.has(String(item.id)) ? orderMap.get(String(item.id)) : item.display_order,
+        }))
+        .sort((a, b) => a.display_order - b.display_order);
 
       localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(updated));
       await auditService.log('REORDER', tableName, null, { count: items.length });
-      window.dispatchEvent(new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'reorder' } }));
-
-      for (const it of items) {
-        apiBridge.putData(tableName, it.id, { display_order: it.display_order }).catch(() => {});
-      }
-
+      window.dispatchEvent(
+        new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'reorder' } })
+      );
       return { error: null };
     },
   };
@@ -612,13 +628,24 @@ const createTableService = (tableName, defaultSort = 'display_order') => {
 const createSingletonService = (tableName) => {
   return {
     async get(includeDrafts = true) {
-      // 1. Try local dev API bridge first
-      const apiData = await apiBridge.fetchTable(tableName);
-      if (apiData && typeof apiData === 'object' && !Array.isArray(apiData)) {
-        localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(apiData));
-        return { data: apiData, error: null };
+      // 1. Query Supabase directly
+      if (isSupabaseConfigured && supabase) {
+        try {
+          let query = supabase.from(tableName).select('*').eq('id', 'current');
+          if (!includeDrafts) {
+            query = query.eq('publish_status', 'published');
+          }
+          const { data, error } = await withTimeout(query.maybeSingle(), 5000);
+          if (!error && data) {
+            localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(data));
+            return { data, error: null };
+          }
+        } catch (err) {
+          console.warn(`[Supabase Singleton Get Notice] ${tableName}:`, err.message || err);
+        }
       }
 
+      // 2. Check local storage cache
       const local = localStorage.getItem(`portfolio_${tableName}`);
       let currentItem = null;
 
@@ -628,28 +655,13 @@ const createSingletonService = (tableName) => {
         } catch (_) {}
       }
 
+      // 3. Fallback to default singleton data
       if (!currentItem) {
         const defaults = getDefaultDataForTable(tableName);
         if (defaults) {
           currentItem = defaults;
           localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(defaults));
-          apiBridge.postData(tableName, defaults).catch(() => {});
         }
-      }
-
-      // 2. Try Supabase (for production)
-      if (isSupabaseConfigured && supabase) {
-        try {
-          let query = supabase.from(tableName).select('*').eq('id', 'current');
-          if (!includeDrafts) {
-            query = query.eq('publish_status', 'published');
-          }
-          const { data, error } = await withTimeout(query.maybeSingle(), 2000);
-          if (!error && data) {
-            localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(data));
-            return { data, error: null };
-          }
-        } catch (_) {}
       }
 
       return { data: currentItem, error: null };
@@ -657,20 +669,33 @@ const createSingletonService = (tableName) => {
 
     async save(payload) {
       const dataToSave = { ...payload, id: 'current', updated_at: new Date().toISOString() };
-      localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(dataToSave));
-      await auditService.log('UPDATE_SINGLETON', tableName, 'current', payload);
-      window.dispatchEvent(new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'save_singleton' } }));
 
-      // Save to shared dev API bridge immediately
-      await apiBridge.postData(tableName, dataToSave);
-
-      // Background Supabase attempt
       if (isSupabaseConfigured && supabase) {
-        supabase.from(tableName).upsert(dataToSave).then(({ error }) => {
-          if (error) console.info(`[Supabase Sync] ${tableName} save:`, error.message);
-        }).catch(() => {});
+        try {
+          const { data, error } = await supabase.from(tableName).upsert(dataToSave).select().maybeSingle();
+          if (error) {
+            console.error(`[Supabase Singleton Save Error] ${tableName}:`, error.message || error);
+            return { data: null, error };
+          }
+          const savedData = data || dataToSave;
+          localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(savedData));
+          await auditService.log('UPDATE_SINGLETON', tableName, 'current', payload);
+          window.dispatchEvent(
+            new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'save_singleton' } })
+          );
+          return { data: savedData, error: null };
+        } catch (err) {
+          console.error(`[Supabase Singleton Save Exception] ${tableName}:`, err);
+          return { data: null, error: err };
+        }
       }
 
+      // Offline / Local fallback mode
+      localStorage.setItem(`portfolio_${tableName}`, JSON.stringify(dataToSave));
+      await auditService.log('UPDATE_SINGLETON', tableName, 'current', payload);
+      window.dispatchEvent(
+        new CustomEvent('portfolio_data_updated', { detail: { table: tableName, action: 'save_singleton' } })
+      );
       return { data: dataToSave, error: null };
     },
   };
@@ -726,7 +751,7 @@ export const portfolioService = {
       ]);
 
       const projects = projectsRes.data || [];
-      const publishedProjects = projects.filter(p => p.publish_status === 'published').length;
+      const publishedProjects = projects.filter((p) => p.publish_status === 'published').length;
       const draftProjects = projects.length - publishedProjects;
 
       return {

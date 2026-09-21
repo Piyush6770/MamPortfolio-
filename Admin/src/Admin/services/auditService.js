@@ -1,34 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../config/supabaseClient';
 
-// Helper API Bridge for dev server sync
-const apiBridge = {
-  async fetchTable(tableName) {
-    try {
-      const res = await fetch(`/api/portfolio/${tableName}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.success && json.data) return json.data;
-      }
-    } catch (_) {}
-    return null;
-  },
-
-  async postData(tableName, payload) {
-    try {
-      const res = await fetch(`/api/portfolio/${tableName}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        return json.data || payload;
-      }
-    } catch (_) {}
-    return payload;
-  },
-};
-
 // Baseline historical audit trail if initial log list is empty
 export const getDefaultAuditLogs = () => [
   {
@@ -181,40 +152,42 @@ export const auditService = {
 
       if (isSupabaseConfigured && supabase) {
         try {
-          const { data: { user } } = await supabase.auth.getUser();
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
           if (user?.email) adminEmail = user.email;
         } catch (_) {}
       }
 
+      const generatedId = `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+
       const newLog = {
-        id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        id: generatedId,
         admin_email: adminEmail,
         action: String(action || 'UPDATE').toUpperCase(),
         entity: String(entity || 'system'),
         entity_id: entityId ? String(entityId) : null,
-        details: typeof details === 'object' ? details : { info: details },
+        details: typeof details === 'object' && details !== null ? details : { info: details },
         created_at: new Date().toISOString(),
       };
 
-      // 1. Save to LocalStorage
+      // 1. Save to LocalStorage cache
       try {
         const localLogs = JSON.parse(localStorage.getItem('portfolio_audit_logs') || '[]');
         const updatedLocal = [newLog, ...localLogs.filter((l) => l.id !== newLog.id)].slice(0, 200);
         localStorage.setItem('portfolio_audit_logs', JSON.stringify(updatedLocal));
       } catch (_) {}
 
-      // 2. Save to dev API Bridge (syncs to data_store.json)
-      apiBridge.postData('audit_logs', newLog).catch(() => {});
-
-      // 3. Save to Supabase in background
+      // 2. Save directly to Supabase
       if (isSupabaseConfigured && supabase) {
-        supabase
-          .from('audit_logs')
-          .insert([newLog])
-          .then(({ error }) => {
-            if (error) console.info('[Supabase Audit] insert notice:', error.message);
-          })
-          .catch(() => {});
+        try {
+          const { error } = await supabase.from('audit_logs').insert([newLog]);
+          if (error) {
+            console.warn('[Supabase Audit Log Notice]:', error.message || error);
+          }
+        } catch (err) {
+          console.warn('[Supabase Audit Log Exception]:', err);
+        }
       }
 
       return { data: newLog, error: null };
@@ -228,29 +201,7 @@ export const auditService = {
     try {
       const logsMap = new Map();
 
-      // 1. Fetch from dev API Bridge / data_store.json
-      const apiLogs = await apiBridge.fetchTable('audit_logs');
-      if (Array.isArray(apiLogs) && apiLogs.length > 0) {
-        apiLogs.forEach((l) => {
-          if (l && (l.id || l.created_at)) {
-            logsMap.set(String(l.id || l.created_at), l);
-          }
-        });
-      }
-
-      // 2. Fetch from LocalStorage
-      try {
-        const localLogs = JSON.parse(localStorage.getItem('portfolio_audit_logs') || '[]');
-        if (Array.isArray(localLogs) && localLogs.length > 0) {
-          localLogs.forEach((l) => {
-            if (l && (l.id || l.created_at)) {
-              logsMap.set(String(l.id || l.created_at), l);
-            }
-          });
-        }
-      } catch (_) {}
-
-      // 3. Fetch from Supabase
+      // 1. Fetch directly from Supabase
       if (isSupabaseConfigured && supabase) {
         try {
           const { data, error } = await supabase
@@ -266,10 +217,24 @@ export const auditService = {
               }
             });
           }
-        } catch (_) {}
+        } catch (err) {
+          console.warn('[Supabase Audit Query Notice]:', err);
+        }
       }
 
-      // 4. If empty or no logs found, populate default baseline history
+      // 2. Fetch from LocalStorage cache
+      try {
+        const localLogs = JSON.parse(localStorage.getItem('portfolio_audit_logs') || '[]');
+        if (Array.isArray(localLogs) && localLogs.length > 0) {
+          localLogs.forEach((l) => {
+            if (l && (l.id || l.created_at) && !logsMap.has(String(l.id || l.created_at))) {
+              logsMap.set(String(l.id || l.created_at), l);
+            }
+          });
+        }
+      } catch (_) {}
+
+      // 3. If empty or no logs found, populate default baseline history
       let combined = Array.from(logsMap.values());
       if (combined.length === 0) {
         const defaults = getDefaultAuditLogs();
