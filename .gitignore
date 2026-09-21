@@ -26,12 +26,11 @@ dist-ssr
 # Environment variables
 .env
 .env.*
+.env.local
 !.env.example
 
-# Environment variables
-.env
-.env.*
-!.env.example
-
-
-Add-Content .gitignore "`n# Admin environment variables`nAdmin/.env`nAdmin/.env.*`n!Admin/.env.example"
+# Admin environment variables
+Admin/.env
+Admin/.env.*
+Admin/.env.local
+!Admin/.env.example

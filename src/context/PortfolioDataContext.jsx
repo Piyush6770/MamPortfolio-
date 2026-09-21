@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { portfolioService } from '../Admin/services/portfolioService';
-import { supabase, isSupabaseConfigured } from '../Admin/config/supabaseClient';
+import { portfolioService } from '../services/portfolioService';
+import { supabase, isSupabaseConfigured } from '../config/supabaseClient';
 import { facultyData as defaultFacultyData } from '../data/facultyData';
 import { projectsData as defaultProjectsData } from '../data/projects';
 import { achievementsData as defaultAchievementsData } from '../data/achievements';
