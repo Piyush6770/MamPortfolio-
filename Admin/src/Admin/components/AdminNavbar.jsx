@@ -10,7 +10,7 @@ export const AdminNavbar = ({ onToggleSidebar }) => {
   const { theme, isDarkMode, toggleTheme } = useTheme();
 
   const handleOpenLiveSite = () => {
-    const publicUrl = import.meta.env.VITE_PUBLIC_PORTFOLIO_URL || 'http://localhost:5173/';
+    const publicUrl = import.meta.env.VITE_PUBLIC_PORTFOLIO_URL || 'https://swatishinde.vercel.app/';
     window.open(publicUrl, '_blank', 'noopener,noreferrer');
   };
 

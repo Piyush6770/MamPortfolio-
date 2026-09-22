@@ -132,7 +132,7 @@ export const DashboardPage = () => {
               {syncing ? syncStatus || 'Syncing...' : '1-Click Data Sync'}
             </button>
             <a
-              href="#/home"
+              href={import.meta.env.VITE_PUBLIC_PORTFOLIO_URL || 'https://swatishinde.vercel.app/'}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-black text-xs font-black rounded-xl transition-all shadow-md active:scale-98"

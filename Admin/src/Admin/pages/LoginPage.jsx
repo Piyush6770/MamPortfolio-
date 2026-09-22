@@ -141,7 +141,7 @@ export const LoginPage = () => {
 
         <div className="pt-2 text-center">
           <a
-            href={import.meta.env.VITE_PUBLIC_PORTFOLIO_URL || 'http://localhost:5173/'}
+            href={import.meta.env.VITE_PUBLIC_PORTFOLIO_URL || 'https://swatishinde.vercel.app/'}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-slate-500 hover:text-slate-800 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors inline-flex items-center gap-1"
